@@ -546,6 +546,9 @@ function sendIVResult(recipientId, messageText) {
 
   var result = magic(pokeSerializer.fromArray(pokeData));  
 
+  var tempResult = result.asObject();
+  console.log(tempResult);
+
   var messageData = {
     recipient: {
       id: recipientId
