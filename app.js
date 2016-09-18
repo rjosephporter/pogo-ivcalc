@@ -548,18 +548,31 @@ function sendIVResult(recipientId, messageText) {
 
   var tempResult = result.asObject();
   console.log(tempResult);
+  var response = [];
+  var averageIV = 0;
+  var ivTotal = 0;
+  response.push(`There are ${tempResult.values.length} possibilities:`);
+  tempResult.values.forEach((value) => {
+    const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
+    ivTotal = ivTotal + ivPercent;
+    response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
+  });
+  averageIV = Math.round(ivTotal / (tempResult.values.length));
+  response.push(`Average IV: ${averageIV}%`);
 
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: result.asObject().toString(),
-      metadata: "DEVELOPER_DEFINED_METADATA"
-    }
-  };
+  response.forEach((res) => {
+    var messageData = {
+      recipient: {
+        id: recipientId
+      },
+      message: {
+        text: res,
+        metadata: "DEVELOPER_DEFINED_METADATA"
+      }
+    };
 
-  callSendAPI(messageData);
+    callSendAPI(messageData);
+  });
 }
 
 /*
