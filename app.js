@@ -543,7 +543,6 @@ function sendTextMessage(recipientId, messageText) {
 function sendIVResult(recipientId, messageText) {
   
   var pokeData = messageText.split(' ');
-  console.log(pokeData);
 
   var result = magic(pokeSerializer.fromArray(pokeData));  
 
@@ -552,7 +551,7 @@ function sendIVResult(recipientId, messageText) {
       id: recipientId
     },
     message: {
-      text: result.toString(),
+      text: result.asObject().toString(),
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };
