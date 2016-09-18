@@ -551,7 +551,7 @@ function sendIVResult(recipientId, messageText) {
       id: recipientId
     },
     message: {
-      text: result.toString().toString(),
+      text: result.toString(),
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };
