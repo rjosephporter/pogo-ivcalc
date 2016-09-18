@@ -17,6 +17,9 @@ const
   express = require('express'),
   https = require('https'),  
   request = require('request');
+ 
+  magic = require('node_modules/pokemon-go-iv-calculator/src/magic');
+  pokeSerializer = require('node_modules/pokemon-go-iv-calculator/src/pokeHelpers');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -525,6 +528,29 @@ function sendTextMessage(recipientId, messageText) {
     },
     message: {
       text: messageText,
+      metadata: "DEVELOPER_DEFINED_METADATA"
+    }
+  };
+
+  callSendAPI(messageData);
+}
+
+/*
+ * Send IV result to user.
+ *
+ */
+function sendIVResult(recipientId, messageText) {
+  
+  var pokeData = split(' ', messageText);
+
+  var result = magic(pokeSerializer.fromArray(pokeData, 2));  
+
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: result.toString(),
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
   };
