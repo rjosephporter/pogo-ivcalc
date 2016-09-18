@@ -18,8 +18,8 @@ const
   https = require('https'),  
   request = require('request');
  
-  magic = require('node_modules/pokemon-go-iv-calculator/src/magic');
-  pokeSerializer = require('node_modules/pokemon-go-iv-calculator/src/pokeHelpers');
+  //magic = require('node_modules/pokemon-go-iv-calculator/src/magic');
+  //pokeSerializer = require('node_modules/pokemon-go-iv-calculator/src/pokeHelpers');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
