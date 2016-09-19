@@ -311,8 +311,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
-        //sendIVResult(senderID, messageText);
+        //sendTextMessage(senderID, messageText);
+        sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
@@ -548,6 +548,16 @@ function sendIVResult(recipientId, messageText) {
   var pokeDataArray = messageText.split(' ');
   var result = magic(pokeSerializer.fromArray(pokeDataArray));  
 
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: null,
+      metadata: "DEVELOPER_DEFINED_METADATA"
+    }
+  };
+
   if(result.isValid()) {
     var tempResult = result.asObject();
     var response = [];
@@ -563,33 +573,15 @@ function sendIVResult(recipientId, messageText) {
     response.push(`Average IV: ${averageIV}%`);
 
     response.forEach((res) => {
-      var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          text: res,
-          metadata: "DEVELOPER_DEFINED_METADATA"
-        }
-      };
-
-      callSendAPI(messageData);
+      messageData.message.text = res;
     });
   } else {
     result.errors.forEach((error) => {
-       var messageData = {
-        recipient: {
-          id: recipientId
-        },
-        message: {
-          text: error,
-          metadata: "DEVELOPER_DEFINED_METADATA"
-        }
-      };     
+      messageData.message.text = error;    
     });
-
-    callSendAPI(messageData);    
   }
+
+  callSendAPI(messageData);
 
 }
 
