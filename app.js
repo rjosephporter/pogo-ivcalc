@@ -572,10 +572,15 @@ function sendIVResult(recipientId, messageText) {
     averageIV = Math.round(ivTotal / (tempResult.values.length));
     response.push(`Average IV: ${averageIV}%`);
 
+    var finalResponse = response.join('\u000A');
+    /*
     response.forEach((res) => {
       messageData.message.text = res;
       callSendAPI(messageData);
     });
+    */
+    messageData.message.text = finalResponse;
+    callSendAPI(messageData);
   } else {
     result.errors.forEach((error) => {
       messageData.message.text = error;
