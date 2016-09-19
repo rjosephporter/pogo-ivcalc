@@ -574,14 +574,14 @@ function sendIVResult(recipientId, messageText) {
 
     response.forEach((res) => {
       messageData.message.text = res;
+      callSendAPI(messageData);
     });
   } else {
     result.errors.forEach((error) => {
-      messageData.message.text = error;    
+      messageData.message.text = error;
+      callSendAPI(messageData);    
     });
   }
-
-  callSendAPI(messageData);
 
 }
 
