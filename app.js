@@ -258,6 +258,7 @@ function receivedMessage(event) {
     // keywords and send back the corresponding example. Otherwise, just echo
     // the text we received.
     switch (messageText) {
+      /*
       case 'image':
         sendImageMessage(senderID);
         break;
@@ -308,6 +309,11 @@ function receivedMessage(event) {
 
       case 'account linking':
         sendAccountLinking(senderID);
+        break;
+      */
+
+      case 'set team':
+        // add function for setting team ()
         break;
 
       default:
