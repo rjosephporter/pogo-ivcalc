@@ -541,13 +541,15 @@ function sendTextMessage(recipientId, messageText) {
  *
  */
 function sendIVResult(recipientId, messageText) {
+
+  // Clean user input
+  messageText = messageText.replace(/\s\s+/g, ' ').trim();
   
   var pokeDataArray = messageText.split(' ');
   var result = magic(pokeSerializer.fromArray(pokeDataArray));  
 
   if(result.isValid()) {
     var tempResult = result.asObject();
-    console.log(tempResult);
     var response = [];
     var averageIV = 0;
     var ivTotal = 0;
