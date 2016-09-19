@@ -311,8 +311,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
-        //sendIVResult(senderID, messageText);
+        //sendTextMessage(senderID, messageText);
+        sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
