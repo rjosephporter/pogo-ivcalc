@@ -2,13 +2,13 @@
 
 const chalk = require('chalk')
 
-const LevelToCPM = require('./node_modules/pokemon-go-iv-calculator/json/level-to-cpm.json')
-const DustToLevel = require('./node_modules/pokemon-go-iv-calculator/json/dust-to-level')
+const LevelToCPM = require('../node_modules/pokemon-go-iv-calculator/json/level-to-cpm.json')
+const DustToLevel = require('../node_modules/pokemon-go-iv-calculator/json/dust-to-level')
 
-const findPokemon = require('./node_modules/pokemon-go-iv-calculator/findPokemon')
-const logPokemon = require('./node_modules/pokemon-go-iv-calculator/logPokemon')
-const isGoodPokemonForItsClass = require('./node_modules/pokemon-go-iv-calculator/isGoodPokemon')
-const guessIVs = require('./node_modules/pokemon-go-iv-calculator/guessIVs')
+const findPokemon = require('../node_modules/pokemon-go-iv-calculator/findPokemon')
+const logPokemon = require('../node_modules/pokemon-go-iv-calculator/logPokemon')
+const isGoodPokemonForItsClass = require('../node_modules/pokemon-go-iv-calculator/isGoodPokemon')
+const guessIVs = require('../node_modules/pokemon-go-iv-calculator/guessIVs')
 
 const init = {
   atk: [Infinity, -Infinity],
@@ -22,7 +22,7 @@ const init = {
 
 function magic(pokemon) {
   const results = (new IvCalculator(pokemon)).results
-  
+
   /*
   if (!results.isValid()) {
     throw new Error(results.errors.join('. '))
