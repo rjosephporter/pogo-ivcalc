@@ -610,7 +610,7 @@ function validateInput(dataArray) {
   };
   
   // count number of parameters
-  if(dataArray.length !== 3 || dataArray.length !== 4) {
+  if(dataArray.length < 4 || dataArray > 4) {
     result.status = false;
     result.message = 'Input should be in the following format: <pokemon> <cp> <hp> <stardust>';
     return result;
