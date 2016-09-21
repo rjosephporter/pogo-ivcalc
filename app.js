@@ -319,8 +319,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        //sendTextMessage(senderID, messageText);
-        sendIVResult(senderID, messageText);
+        sendTextMessage(senderID, messageText);
+        //sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
@@ -571,7 +571,8 @@ function sendIVResult(recipientId, messageText) {
     messageData.message.text = validate.message;
     callSendAPI(messageData);
   } else {
-    var result = magic(pokeSerializer.fromArray(pokeDataArray));  
+    //var result = magic(pokeSerializer.fromArray(pokeDataArray));  
+    var result = (new IvCalculator(pokeSerializer.fromArray(pokeDataArray))).results;
 
     if(result.isValid()) {
       var tempResult = result.asObject();
