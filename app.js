@@ -20,6 +20,8 @@ const
  
   const magic = require('./node_modules/pokemon-go-iv-calculator/src/magic');
   const pokeSerializer = require('./node_modules/pokemon-go-iv-calculator/src/pokeHelpers');
+  const findPokemon = require('./node_modules/pokemon-go-iv-calculator/src/findPokemon');
+  const DustToLevel = require('./node_modules/pokemon-go-iv-calculator/json/dust-to-level');
 
 var app = express();
 app.set('port', process.env.PORT || 5000);
@@ -548,12 +550,6 @@ function sendTextMessage(recipientId, messageText) {
  */
 function sendIVResult(recipientId, messageText) {
 
-  // Clean user input
-  messageText = messageText.replace(/\s\s+/g, ' ').trim();
-  
-  var pokeDataArray = messageText.split(' ');
-  var result = magic(pokeSerializer.fromArray(pokeDataArray));  
-
   var messageData = {
     recipient: {
       id: recipientId
@@ -562,37 +558,84 @@ function sendIVResult(recipientId, messageText) {
       text: null,
       metadata: "DEVELOPER_DEFINED_METADATA"
     }
-  };
+  };  
 
-  if(result.isValid()) {
-    var tempResult = result.asObject();
-    var response = [];
-    var averageIV = 0;
-    var ivTotal = 0;
-    response.push(`There are ${tempResult.values.length} possibilities:`);
-    tempResult.values.forEach((value) => {
-      const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
-      ivTotal = ivTotal + ivPercent;
-      response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
-    });
-    averageIV = Math.round(ivTotal / (tempResult.values.length));
-    response.push(`Average IV: ${averageIV}%`);
+  // Clean user input
+  messageText = messageText.replace(/\s\s+/g, ' ').trim();
+  
+  var pokeDataArray = messageText.split(' ');
 
-    var finalResponse = response.join('\u000A');
-    /*
-    response.forEach((res) => {
-      messageData.message.text = res;
-      callSendAPI(messageData);
-    });
-    */
-    messageData.message.text = finalResponse;
+  // Validate
+  var validate = validateInput(pokeDataArray);
+  if(validate.status === false) {
+    messageData.message.text = validate.message;
     callSendAPI(messageData);
   } else {
-    result.errors.forEach((error) => {
-      messageData.message.text = error;
-      callSendAPI(messageData);    
-    });
+    var result = magic(pokeSerializer.fromArray(pokeDataArray));  
+
+    if(result.isValid()) {
+      var tempResult = result.asObject();
+      var response = [];
+      var averageIV = 0;
+      var ivTotal = 0;
+      response.push(`There are ${tempResult.values.length} possibilities:`);
+      tempResult.values.forEach((value) => {
+        const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
+        ivTotal = ivTotal + ivPercent;
+        response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
+      });
+      averageIV = Math.round(ivTotal / (tempResult.values.length));
+      response.push(`Average IV: ${averageIV}%`);
+
+      var finalResponse = response.join('\u000A');
+      messageData.message.text = finalResponse;
+      callSendAPI(messageData);
+    } else {
+      result.errors.forEach((error) => {
+        messageData.message.text = error;
+        callSendAPI(messageData);    
+      });
+    }
   }
+}
+
+/**
+ * Validate user input
+ *
+ */
+function validateInput(dataArray) {
+  var result = {
+    status: null,
+    message: null
+  };
+  
+  // count number of parameters
+  if(dataArray.length !== 3 || dataArray.length !== 4) {
+    result.status = false;
+    result.message = 'Input should be in the following format: <pokemon> <cp> <hp> <stardust>';
+    return result;
+  }
+
+  // check if pokemon exists
+  var pokemon = findPokemon(dataArray[0]);
+  if(pokemon == null) {
+    result.status = false;
+    result.message = 'Pokemon unknown';
+    return result;
+  }
+
+  // check if stardust is valid
+  var stardust = DustToLevel[dataArray[3]];
+  if(typeof stardust == 'undefined') {
+    result.status = false;
+    result.message = 'Invalid startdust value';
+    return result;
+  }
+
+  // if all checks out fine, then proceed
+  result.status = true;
+
+  return result;
 
 }
 
