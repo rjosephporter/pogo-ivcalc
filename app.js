@@ -18,7 +18,8 @@ const
   https = require('https'),  
   request = require('request');
  
-  const magic = require('./node_modules/pokemon-go-iv-calculator/src/magic');
+  //const magic = require('./node_modules/pokemon-go-iv-calculator/src/magic');
+  const magic = require('./src/magic');
   const pokeSerializer = require('./node_modules/pokemon-go-iv-calculator/src/pokeHelpers');
   const findPokemon = require('./node_modules/pokemon-go-iv-calculator/src/findPokemon');
   const DustToLevel = require('./node_modules/pokemon-go-iv-calculator/json/dust-to-level');
@@ -319,8 +320,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        sendTextMessage(senderID, messageText);
-        //sendIVResult(senderID, messageText);
+        //sendTextMessage(senderID, messageText);
+        sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
