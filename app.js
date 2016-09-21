@@ -319,14 +319,109 @@ function receivedMessage(event) {
         break;
 
       default:
-        //sendTextMessage(senderID, messageText);
-        sendIVResult(senderID, messageText);
+        sendTextMessage(senderID, messageText);
+        //sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }
 }
 
+/*
+ * Send IV result to user.
+ *
+ */
+function sendIVResult(recipientId, messageText) {
+
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: null,
+      metadata: "DEVELOPER_DEFINED_METADATA"
+    }
+  };  
+
+  // Clean user input
+  messageText = messageText.replace(/\s\s+/g, ' ').trim();
+  
+  var pokeDataArray = messageText.split(' ');
+
+  // Validate
+  var validate = validateInput(pokeDataArray);
+  if(validate.status === false) {
+    messageData.message.text = validate.message;
+    callSendAPI(messageData);
+  } else {
+    var result = magic(pokeSerializer.fromArray(pokeDataArray));  
+    //var result = (new IvCalculator(pokeSerializer.fromArray(pokeDataArray))).results;
+
+    if(result.isValid()) {
+      var tempResult = result.asObject();
+      var response = [];
+      var averageIV = 0;
+      var ivTotal = 0;
+      response.push(`There are ${tempResult.values.length} possibilities:`);
+      tempResult.values.forEach((value) => {
+        const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
+        ivTotal = ivTotal + ivPercent;
+        response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
+      });
+      averageIV = Math.round(ivTotal / (tempResult.values.length));
+      response.push(`Average IV: ${averageIV}%`);
+
+      var finalResponse = response.join('\u000A');
+      messageData.message.text = finalResponse;
+      callSendAPI(messageData);
+    } else {
+      result.errors.forEach((error) => {
+        messageData.message.text = error;
+        callSendAPI(messageData);    
+      });
+    }
+  }
+}
+
+/**
+ * Validate user input
+ *
+ */
+function validateInput(dataArray) {
+  var result = {
+    status: null,
+    message: null
+  };
+  
+  // count number of parameters
+  if(dataArray.length < 4 || dataArray > 4) {
+    result.status = false;
+    result.message = 'Input should be in the following format: <pokemon> <cp> <hp> <stardust>';
+    return result;
+  }
+
+  // check if pokemon exists
+  var pokemon = findPokemon(dataArray[0]);
+  if(pokemon == null) {
+    result.status = false;
+    result.message = 'Pokemon unknown';
+    return result;
+  }
+
+  // check if stardust is valid
+  var stardust = DustToLevel[dataArray[3]];
+  if(typeof stardust == 'undefined') {
+    result.status = false;
+    result.message = 'Invalid startdust value';
+    return result;
+  }
+
+  // if all checks out fine, then proceed
+  result.status = true;
+
+  return result;
+
+}
 
 /*
  * Delivery Confirmation Event
@@ -542,102 +637,6 @@ function sendTextMessage(recipientId, messageText) {
   };
 
   callSendAPI(messageData);
-}
-
-/*
- * Send IV result to user.
- *
- */
-function sendIVResult(recipientId, messageText) {
-
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: null,
-      metadata: "DEVELOPER_DEFINED_METADATA"
-    }
-  };  
-
-  // Clean user input
-  messageText = messageText.replace(/\s\s+/g, ' ').trim();
-  
-  var pokeDataArray = messageText.split(' ');
-
-  // Validate
-  var validate = validateInput(pokeDataArray);
-  if(validate.status === false) {
-    messageData.message.text = validate.message;
-    callSendAPI(messageData);
-  } else {
-    //var result = magic(pokeSerializer.fromArray(pokeDataArray));  
-    var result = (new IvCalculator(pokeSerializer.fromArray(pokeDataArray))).results;
-
-    if(result.isValid()) {
-      var tempResult = result.asObject();
-      var response = [];
-      var averageIV = 0;
-      var ivTotal = 0;
-      response.push(`There are ${tempResult.values.length} possibilities:`);
-      tempResult.values.forEach((value) => {
-        const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
-        ivTotal = ivTotal + ivPercent;
-        response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
-      });
-      averageIV = Math.round(ivTotal / (tempResult.values.length));
-      response.push(`Average IV: ${averageIV}%`);
-
-      var finalResponse = response.join('\u000A');
-      messageData.message.text = finalResponse;
-      callSendAPI(messageData);
-    } else {
-      result.errors.forEach((error) => {
-        messageData.message.text = error;
-        callSendAPI(messageData);    
-      });
-    }
-  }
-}
-
-/**
- * Validate user input
- *
- */
-function validateInput(dataArray) {
-  var result = {
-    status: null,
-    message: null
-  };
-  
-  // count number of parameters
-  if(dataArray.length < 4 || dataArray > 4) {
-    result.status = false;
-    result.message = 'Input should be in the following format: <pokemon> <cp> <hp> <stardust>';
-    return result;
-  }
-
-  // check if pokemon exists
-  var pokemon = findPokemon(dataArray[0]);
-  if(pokemon == null) {
-    result.status = false;
-    result.message = 'Pokemon unknown';
-    return result;
-  }
-
-  // check if stardust is valid
-  var stardust = DustToLevel[dataArray[3]];
-  if(typeof stardust == 'undefined') {
-    result.status = false;
-    result.message = 'Invalid startdust value';
-    return result;
-  }
-
-  // if all checks out fine, then proceed
-  result.status = true;
-
-  return result;
-
 }
 
 /*
