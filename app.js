@@ -356,10 +356,10 @@ function sendIVResult(recipientId, messageText) {
     callSendAPI(messageData);
   } else {
     var result = magic(pokeSerializer.fromArray(pokeDataArray));  
-    //var result = (new IvCalculator(pokeSerializer.fromArray(pokeDataArray))).results;
 
     if(result.isValid()) {
       var tempResult = result.asObject();
+      console.log(tempResult);
       var response = [];
       var averageIV = 0;
       var ivTotal = 0;
