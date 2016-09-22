@@ -359,24 +359,27 @@ function sendIVResult(recipientId, messageText) {
 
     if(result.isValid()) {
       var tempResult = result.asObject();
-      var temp2 = result.toString();
-      console.log(temp2);
       var response = [];
+      var possibilities = [];
       var averageIV = 0;
       var ivTotal = 0;
       response.push(`There are ${tempResult.values.length} possibilities:`);
-      if(tempResult.values.length <= 10) {
-        tempResult.values.forEach((value) => {
-          const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
-          ivTotal = ivTotal + ivPercent;
-          response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
-        });
-      }
-      averageIV = Math.round(ivTotal / (tempResult.values.length));
-      response.push(`Average IV: ${averageIV}%`);
 
-      var finalResponse = response.join('\u000A');
-      finalResponse = temp2.join('\u000A');
+      tempResult.values.forEach((value) => {
+        const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
+        ivTotal = ivTotal + ivPercent;
+        possibilities.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
+      });
+
+      averageIV = Math.round(ivTotal / (tempResult.values.length));
+
+      var finalResponse;
+      if(tempResult.values.length < 15) {
+        finalResponse = response.concat(possibilities);
+      }
+      finalResponse.push(`Average IV: ${averageIV}%`);
+      finalResponse = finalResponse.join('\u000A');
+
       messageData.message.text = finalResponse;
       callSendAPI(messageData);
     } else {
