@@ -376,6 +376,7 @@ function sendIVResult(recipientId, messageText) {
       response.push(`Average IV: ${averageIV}%`);
 
       var finalResponse = response.join('\u000A');
+      finalResponse = temp2.join('\u000A');
       messageData.message.text = finalResponse;
       callSendAPI(messageData);
     } else {
