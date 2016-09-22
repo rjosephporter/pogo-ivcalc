@@ -320,8 +320,8 @@ function receivedMessage(event) {
         break;
 
       default:
-        //sendTextMessage(senderID, messageText);
-        sendIVResult(senderID, messageText);
+        sendTextMessage(senderID, messageText);
+        //sendIVResult(senderID, messageText);
     }
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
@@ -373,12 +373,11 @@ function sendIVResult(recipientId, messageText) {
 
       averageIV = Math.round(ivTotal / (tempResult.values.length));
 
-      var finalResponse;
       if(tempResult.values.length < 15) {
-        finalResponse = response.concat(possibilities);
+        response = response.concat(possibilities);
       }
-      finalResponse.push(`Average IV: ${averageIV}%`);
-      finalResponse = finalResponse.join('\u000A');
+      response.push(`Average IV: ${averageIV}%`);
+      var finalResponse = response.join('\u000A');
 
       messageData.message.text = finalResponse;
       callSendAPI(messageData);
