@@ -364,11 +364,13 @@ function sendIVResult(recipientId, messageText) {
       var averageIV = 0;
       var ivTotal = 0;
       response.push(`There are ${tempResult.values.length} possibilities:`);
-      tempResult.values.forEach((value) => {
-        const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
-        ivTotal = ivTotal + ivPercent;
-        response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
-      });
+      if(tempResult.values.length <= 10) {
+        tempResult.values.forEach((value) => {
+          const ivPercent = Math.round((value.ivs.IndAtk + value.ivs.IndDef + value.ivs.IndSta) / 45 * 100)
+          ivTotal = ivTotal + ivPercent;
+          response.push(`${value.ivs.IndAtk}/${value.ivs.IndDef}/${value.ivs.IndSta} (${ivPercent}%)`)
+        });
+      }
       averageIV = Math.round(ivTotal / (tempResult.values.length));
       response.push(`Average IV: ${averageIV}%`);
 
