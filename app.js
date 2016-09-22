@@ -359,7 +359,8 @@ function sendIVResult(recipientId, messageText) {
 
     if(result.isValid()) {
       var tempResult = result.asObject();
-      console.log(tempResult);
+      var temp2 = result.toString();
+      console.log(temp2);
       var response = [];
       var averageIV = 0;
       var ivTotal = 0;
